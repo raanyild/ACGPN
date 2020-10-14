@@ -81,7 +81,6 @@ def main():
     print('# Inference images = %d' % dataset_size)
 
     model = create_model(opt)
-
     for i, data in enumerate(dataset):
 
         # add gaussian noise channel
@@ -97,6 +96,22 @@ def main():
         img_fore = data['image'] * mask_fore
         img_fore_wc = img_fore * mask_fore
         all_clothes_label = changearm(data['label'])
+
+
+
+        #debug
+        print("debug>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        print(data['label'].size())
+        print(data['edge'].size())
+        print(data['color'].size())
+        print(data['image'].size())
+        print(data['pose'].size())
+        print(img_fore.size())
+        print(mask_clothes.size())
+        print(all_clothes_label.size())
+        print(mask_fore.size())
+        print(data['label'])
+        #debug
 
         ############## Forward Pass ######################
         fake_image, warped_cloth, refined_cloth = model(Variable(data['label'].cuda()), Variable(data['edge'].cuda()), Variable(img_fore.cuda()), Variable(

@@ -103,6 +103,7 @@ class AlignedDataset(BaseDataset):
                         self.diction[name].append(d)
 
     def __getitem__(self, index):
+        print("index : " + str(index))
         train_mask = 9600
         # input A (label maps)
         box = []
@@ -127,11 +128,16 @@ class AlignedDataset(BaseDataset):
         params = get_params(self.opt, A.size)
         if self.opt.label_nc == 0:
             transform_A = get_transform(self.opt, params)
+            print("hi1")
             A_tensor = transform_A(A.convert('RGB'))
         else:
             transform_A = get_transform(
                 self.opt, params, method=Image.NEAREST, normalize=False)
+            print("hi2")
+            print(A_tensor)
             A_tensor = transform_A(A) * 255.0
+            print(A_tensor)
+            return
 
         B_tensor = inst_tensor = feat_tensor = 0
         # input B (real images)
@@ -199,15 +205,17 @@ class AlignedDataset(BaseDataset):
             pose_map[i] = one_map[0]
         P_tensor = pose_map
 
+        print(A_path)
         input_dict = {'label': A_tensor, 'image': B_tensor,
-                      'path': A_path, 'name': A_path.split("/")[-1].split("\\")[1],
+                      'path': A_path, 'name': A_path.split("/")[-1].split("_")[1],
                       'edge': E_tensor, 'color': C_tensor, 'mask': M_tensor, 'colormask': MC_tensor, 'pose': P_tensor
                       }
 
         return input_dict
 
     def __len__(self):
-        return len(self.A_paths) // self.opt.batchSize * self.opt.batchSize
+        return len(self.human_names)
+        #return 2
 
     def name(self):
         return 'AlignedDataset'
